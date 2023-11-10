@@ -1,0 +1,116 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+  <head>
+    <title>JiraExt</title>
+    <style>
+
+      html {
+        font-size: 14px;
+      font-style: normal;
+      font-variant: normal;
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: 1.42857143;
+      text-align: left;
+      white-space: normal;
+      font-family: "apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", " Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+}
+
+      body {
+        font-family: apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+        font-size: 100%;
+        background-color: #fff;
+        margin: 0;
+        padding: 0;
+      }
+      #control {
+        /* main popup div */
+        margin: 0px auto;
+        width: 200px;
+        height: 250px;
+        white-space: nowrap;
+        word-break: break-all;
+      }
+
+      #header {
+        display: inline-block;
+        background-color: #0747a6;
+        align-items: center;
+        display: flex;
+        justify-content: flex-start;
+        box-sizing: border-box;
+        padding: 0 10px;
+        position: relative;
+        z-index: 4;
+        height: 40px;
+        width: 200px;
+        vertical-align: middle;
+      }
+
+      #title {
+        display: inline-block;
+        margin: 0;
+        text-align: center;
+        line-height: normal;
+        color: #fff;
+      }
+
+      #titletext {
+        display: inline-block;
+        margin: 0;
+        text-align: center;
+        line-height: normal;
+        color: #fff;
+      }
+
+      #test {
+        height: 60px;
+      }
+
+
+      h5 {
+        color: #fff;
+        margin: 2px;
+      }
+
+      p {
+        color: #ddddcc;
+        white-space: break-spaces;
+      }
+    </style>
+
+    <!--
+      - JavaScript and HTML must be in separate files: see our Content Security
+      - Policy documentation[1] for details and explanation.
+      -
+      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
+     -->
+    <script src="popup.js"></script>
+  </head>
+  <body>
+    <div>
+        <header id="header" role="banner">
+            <span id="title">
+                <h4 id="titletext">Jira+</h4>
+                <h5>ver 0.0.1</h5>
+            </span>
+        </header>
+    </div>
+      <div>
+        <div>
+            <button id="notify">Ticket Notifier</button>
+        </div>
+      </div>
+      
+
+    </div>
+  </body>
+  </html>
