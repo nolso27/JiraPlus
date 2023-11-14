@@ -5,10 +5,13 @@ Adds additional functionality and ease-of-use to Jira such as a new ticket notif
 ### **Installation**
 1. Download the unpacked version of the extension by downloading the zip from Github and then extract it.
 ![screenshot](assets/step1.png)
-3. Open Google Chome and navigate to manage extensions
+
+2. Open Google Chome and navigate to manage extensions
 ![screenshot](assets/step2.png)
-5. Enable developer mode in the top right
-6. Click load unpacked and select the extracted extension folder.
+
+3. Enable developer mode in the top right
+4. Click load unpacked and select the extracted extension folder.
 ![screenshot](assets/step3.png)
-8. It is now installed you can view it in your extensions in the top right of your chrome browser.
+
+6. It is now installed you can view it in your extensions in the top right of your chrome browser.
 
