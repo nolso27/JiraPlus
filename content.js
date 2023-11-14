@@ -13,6 +13,7 @@ function notifyMode() {
     var originalTitle = document.title;
     var notifyModeTitle = 'Tab is in Notify Mode';
     var toggleTitle = false; // Flag to toggle between original and notify mode titles
+    var toggleTitleInterval; // Variable to store the interval ID for title toggling
 
     function toggleTitleText() {
         document.title = toggleTitle ? originalTitle : notifyModeTitle;
@@ -51,11 +52,16 @@ function notifyMode() {
                         userResponse = window.confirm('A new ticket has been found. Would you like to open the latest ticket? NOTE: This will end notify mode.');
                         closePrompt();
                     }, 100);
+
+                    // Clear the title toggling interval if a new ticket is found
+                    clearInterval(toggleTitleInterval);
                 } else {
                     // Reset the toggleTitle flag if no new ticket is found
                     toggleTitle = false;
-                    // Start the interval for title toggling
-                    setInterval(toggleTitleText, 2000);
+                    // Clear the title toggling interval
+                    clearInterval(toggleTitleInterval);
+                    // Start the interval for title toggling if not already started
+                    toggleTitleInterval = setInterval(toggleTitleText, 2000);
                 }
             }
         });
@@ -75,6 +81,10 @@ function notifyMode() {
     if (elements.length > 0) {
         if (document.getElementsByClassName('issue-list')[0].getElementsByTagName('li').length === 0) {
             observer.observe(elements[0], { childList: true, subtree: true });
+            // Clear the title toggling interval
+            clearInterval(toggleTitleInterval);
+            // Start the interval for title toggling if not already started
+            toggleTitleInterval = setInterval(toggleTitleText, 2000);
         } else {
             processSearchResults();
         }
@@ -84,8 +94,19 @@ function notifyMode() {
 
     // Set the refresh interval outside the if condition
     setInterval(function () {
+        // Clear all intervals and timeouts
+        clearInterval(toggleTitleInterval);
+        clearTimeout(timeoutId);
         location.reload(true);
     }, refreshInterval);
+
+    // Handle visibility change
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') {
+            // Page is visible, trigger the search results processing
+            processSearchResults();
+        }
+    });
 }
 
 function afterWindowLoaded() {
