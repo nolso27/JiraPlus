@@ -9,7 +9,7 @@ function notifyMode() {
 
     var timeoutId;
     var observer;
-    var refreshInterval = 10000;
+    var refreshInterval = 30000; // How long it takes for it to recheck for new tickets
 
     function processSearchResults() {
         console.log('Processing search results...');
