@@ -1,116 +1,127 @@
-<!doctype html>
-<!--
- This page is shown when the extension button is clicked, because the
- "browser_action" field in manifest.json contains the "default_popup" key with
- value "popup.html".
- -->
-<html>
-  <head>
-    <title>JiraExt</title>
-    <style>
-
-      html {
-        font-size: 14px;
-      font-style: normal;
-      font-variant: normal;
-      font-weight: 400;
-      letter-spacing: 0;
-      line-height: 1.42857143;
-      text-align: left;
-      white-space: normal;
-      font-family: "apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", " Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-      background-color: #fff;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JiraExt</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #222;
       margin: 0;
       padding: 0;
-}
-
-      body {
-        font-family: apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
-        font-size: 100%;
-        background-color: #fff;
-        margin: 0;
-        padding: 0;
-      }
-      #control {
-        /* main popup div */
-        margin: 0px auto;
-        width: 200px;
-        height: 250px;
-        white-space: nowrap;
-        word-break: break-all;
-      }
-
-      #header {
-        display: inline-block;
-        background-color: #0747a6;
-        align-items: center;
-        display: flex;
-        justify-content: flex-start;
-        box-sizing: border-box;
-        padding: 0 10px;
-        position: relative;
-        z-index: 4;
-        height: 40px;
-        width: 200px;
-        vertical-align: middle;
-      }
-
-      #title {
-        display: inline-block;
-        margin: 0;
-        text-align: center;
-        line-height: normal;
-        color: #fff;
-      }
-
-      #titletext {
-        display: inline-block;
-        margin: 0;
-        text-align: center;
-        line-height: normal;
-        color: #fff;
-      }
-
-      #test {
-        height: 60px;
-      }
-
-
-      h5 {
-        color: #fff;
-        margin: 2px;
-      }
-
-      p {
-        color: #ddddcc;
-        white-space: break-spaces;
-      }
-    </style>
-
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
-     -->
-    <script src="popup.js"></script>
-  </head>
-  <body>
-    <div>
-        <header id="header" role="banner">
-            <span id="title">
-                <h4 id="titletext">Jira+</h4>
-                <h5>ver 0.0.1</h5>
-            </span>
-        </header>
-    </div>
-      <div>
-        <div>
-            <button id="notify">Ticket Notifier</button>
-        </div>
+    }
+    #control {
+      margin: 0;
+      width: 200px;
+      height: 250px;
+      background-color: #333;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #outer-outline {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 2px solid white;
+      box-sizing: border-box;
+      z-index: 2;
+    }
+    #inner-outline {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      border: 2px solid black;
+      box-sizing: border-box;
+      z-index: 3;
+    }
+    #header {
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 10px;
+      background-color: #0747a6;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      border-bottom: 2px solid black;
+    }
+    #title {
+      flex-grow: 1;
+      text-align: center;
+    }
+    #titletext {
+      margin: 0;
+      color: #fff;
+    }
+    #test {
+      height: 60px;
+    }
+    h5 {
+      color: #fff;
+      margin: 2px;
+    }
+    p {
+      color: #ddd;
+      white-space: break-spaces;
+      padding: 10px;
+      margin: 0;
+    }
+    #button1 {
+      display: flex;
+      justify-content: center;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border: 2px solid black;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .slider {
+      width: 80%;
+      margin: 10px;
+    }
+    label {
+      color: white;
+    }
+  </style>
+  <script src="popup.js"></script>
+</head>
+<body>
+  <div id="control">
+    <div id="outer-outline"></div>
+    <div id="inner-outline">
+      <header id="header" role="banner">
+        <span id="title">
+          <h4 id="titletext">Jira+</h4>
+          <h5>ver 0.0.2</h5>
+        </span>
+      </header>
+      <div id="button1">
+        <button id="notify">Notify Mode</button>
       </div>
-      
-
+      <div class="slider">
+        <label for="volume-slider">Volume:</label>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.005" value=".5">
+      </div>
+      <div class="slider">
+        <label for="exclusion-slider">Exclusion Amount:</label>
+        <input type="range" id="exclusion-slider" min="0" max="10" value="10">
+      </div>
     </div>
-  </body>
-  </html>
+  </div>
+</body>
+</html>

@@ -4,55 +4,72 @@ if (document.readyState !== 'complete') {
     afterWindowLoaded();
 }
 
-function afterWindowLoaded() {
-    // Everything that needs to happen after the window is fully loaded.
-    console.log('test');
-    if (window.location.href.includes('jira.benco.com/', '/?jql=')) { // check if tab is on search
-        console.log('url')
+function notifyMode() {
+    console.log('notify mode');
 
-        // Variables for timeout, observer, and refresh interval
-        var timeoutId;
-        var observer;
-        var refreshInterval = 20000; // 20 seconds in milliseconds
+    var timeoutId;
+    var observer;
+    var refreshInterval = 10000;
 
-        // Function to process search results
-        function processSearchResults() {
-            console.log('Search results found');
-            // Process the search results here
-            console.log(document.getElementsByClassName('issue-list')[0].getElementsByTagName('li'));
-            chrome.runtime.sendMessage({ type: 'resultfound', data: document.getElementsByClassName('issue-list')[0].getElementsByTagName('li').length });
-        }
+    function processSearchResults() {
+        console.log('Processing search results...');
+        // Process the search results here
+        var liElements = document.querySelectorAll('.issue-list li');
+        chrome.runtime.sendMessage({ type: 'resultfound', data: liElements.length });
 
-        // Watch for changes in the search-results container
-        observer = new MutationObserver(function(mutations) {
-            console.log('observing');
-            mutations.forEach(function(mutation) {
-                if (mutation.addedNodes.length > 0) {
-                    // Search results are added to the DOM
-                    console.log('Search result added');
-                    clearTimeout(timeoutId); // Clear previous timeout
-                    timeoutId = setTimeout(processSearchResults, 3000); // Set a new timeout
-                }
-            });
-        });
+        // Prompt the user with a popup
+        var userResponse = false;
 
-        // Start observing the search-results container
-        var elements = document.getElementsByClassName('search-results');
-        if (elements.length > 0) {
-            if (document.getElementsByClassName('issue-list')[0].getElementsByTagName('li').length === 0) {
-                observer.observe(elements[0], { childList: true, subtree: true });
+        function closePrompt() {
+            clearInterval(promptInterval);
+
+            if (userResponse) {
+                window.location.href = document.getElementsByClassName('issue-link')[0].innerHTML;
             } else {
-                processSearchResults();
+                console.log('User declined to continue or the timeout expired.');
             }
-        } else {
-            console.log('No results container found');
         }
 
-        // Set interval for page refresh
-        setInterval(function() {
-            location.reload(true); // Reload the page
-        }, refreshInterval);
-    } else {
-        // Handle other cases
+        // Display the prompt and handle user response
+        var promptInterval = setInterval(function () {
+            userResponse = window.confirm('A new ticket has been found. Would you like to open the latest ticket? NOTE: This will end notify mode.');
+            closePrompt();
+        }, 100);
     }
+
+    observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            if (mutation.addedNodes.length > 0) {
+                console.log('Search result added');
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(processSearchResults, 3000);
+            }
+        });
+    });
+
+    var elements = document.getElementsByClassName('search-results');
+    if (elements.length > 0) {
+        if (document.getElementsByClassName('issue-list')[0].getElementsByTagName('li').length === 0) {
+            observer.observe(elements[0], { childList: true, subtree: true });
+        } else {
+            processSearchResults();
+        }
+    } else {
+        console.log('No results container found');
+    }
+
+    setInterval(function () {
+        location.reload(true);
+    }, refreshInterval);
+}
+
+function afterWindowLoaded() {
+    chrome.storage.session.get(['notifyMode']).then((result) => {
+        console.log(result.notifyMode);
+        if (result.notifyMode.modeActive) {
+            notifyMode();
+        } else {
+            //window.location.href = 'https://jira.benco.com/issues/?jql=project = BEN AND status = Untriaged AND assignee in (EMPTY)'
+        }
+    });
 }

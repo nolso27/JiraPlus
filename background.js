@@ -1,39 +1,66 @@
+// Function to listen for notify message
 function listenForNotify() {
-    console.log('listening')
-    chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {   
+    console.log('listening');
+    chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         if (message.type === 'notify') {
             console.log('button was pressed');
-            chrome.storage.session.set({ notifyMode: true });
-            chrome.storage.session.set({ notifyTab: message.data })
+            var notifyProperties = {modeActive: null, notifyTab: null, isTicketActive: null}
+            notifyProperties.modeActive = true;
+            notifyProperties.notifyTab = message.data;
+            chrome.storage.session.set({ notifyMode: notifyProperties});
             notifyMode();
-
         }
     });
 }
 
+// Function to handle notify mode
 function notifyMode() {
-    var exclusionAmount = 3;
+    let exclusionAmount = 0; // Amount of tickets to exclude from the new ticket notifier. I.e. if amount is 3, 4 tickets must be in to notify
     console.log('entered notify mode');
+    // Listen for resultfound message
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === 'resultfound') {
-            resultLength = message.data;
+            let resultLength = message.data;
             console.log('success! ', message.data);
-            if(resultLength > exclusionAmount){
-                createNotification();
-                playSound();
-            }
+            chrome.storage.local.get(["exclusion"], function (result) {
+                if (result.exclusion) {
+                    console.log('retrieved exclusion: ', result.exclusion);
+                    exclusionAmount = result.exclusion;
+                    if (resultLength > exclusionAmount) {
+                        console.log(resultLength + ' and ' + exclusionAmount);
+                        createNotification();
+                        playSound();
+
+                    }
+                }
+            });
         }
     });
 }
 
-function createNotification(){
-    var opt = {type: "basic",title: "Your Title",message: "Your message",iconUrl: "icon.png"}
-    chrome.notifications.create("notificationName",opt,function(){});
+// Function to create notification
+function createNotification() {
+    let opt = {
+        type: "basic",
+        title: "Jira+",
+        message: "A new ticket is in!",
+        iconUrl: "icon.png"
+    };
+    chrome.notifications.create("notificationName", opt, function () {
+        // Placeholder comment: Handle notification creation callback if needed
+    });
 }
 
-async function playSound(source = 'notif1.mp3', volume = .5) {
-    await createOffscreen();
-    await chrome.runtime.sendMessage({ play: { source, volume } });
+// Function to play sound
+async function playSound(source = 'notif1.mp3') {
+    // Retrieve stored volume value from long term storage
+    chrome.storage.local.get(["volume"], function (result) {
+        let volume = result.volume || 0.5; // Set default volume to 0.5 if not found in storage
+          // Create the offscreen document if it doesn't already exist
+        createOffscreen().then(() => {
+            chrome.runtime.sendMessage({ play: { source, volume } });
+        });
+    });
 }
 
 // Create the offscreen document if it doesn't already exist
@@ -42,16 +69,20 @@ async function createOffscreen() {
     await chrome.offscreen.createDocument({
         url: 'offscreen.html',
         reasons: ['AUDIO_PLAYBACK'],
-        justification: 'testing' // details for using the API
+        justification: 'testing' // Placeholder comment: Provide specific details for using the API
     });
 }
 
+// Check the value of notifyMode in storage
+chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
 
 chrome.storage.session.get(['notifyMode']).then((result) => {
-    if (result.notifyMode !== true) {
+    console.log(result.notifyMode)
+    if (result.notifyMode == null) {
+        
         listenForNotify();
     }
-    if (result.notifyMode) {
+    if (result.notifyMode.modeActive) {
         notifyMode();
     }
 });
