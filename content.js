@@ -16,25 +16,34 @@ function notifyMode() {
         // Process the search results here
         var liElements = document.querySelectorAll('.issue-list li');
         chrome.runtime.sendMessage({ type: 'resultfound', data: liElements.length });
+        chrome.storage.local.get(["exclusion"], function (result) {
+            if (result.exclusion) {
+                console.log('retrieved exclusion: ', result.exclusion);
+                exclusionAmount = result.exclusion;
+                if (liElements.length > exclusionAmount) {
+                    console.log(liElements.length + ' and ' + exclusionAmount);
+                    // Prompt the user with a popup
+                    var userResponse = false;
 
-        // Prompt the user with a popup
-        var userResponse = false;
+                    function closePrompt() {
+                        clearInterval(promptInterval);
 
-        function closePrompt() {
-            clearInterval(promptInterval);
+                        if (userResponse) {
+                            window.location.href = document.getElementsByClassName('issue-link')[0].innerHTML;
+                        } else {
+                            console.log('User declined to continue or the timeout expired.');
+                        }
+                    }
 
-            if (userResponse) {
-                window.location.href = document.getElementsByClassName('issue-link')[0].innerHTML;
-            } else {
-                console.log('User declined to continue or the timeout expired.');
+                    // Display the prompt and handle user response
+                    var promptInterval = setInterval(function () {
+                        userResponse = window.confirm('A new ticket has been found. Would you like to open the latest ticket? NOTE: This will end notify mode.');
+                        closePrompt();
+                    }, 100);
+                }
             }
-        }
-
-        // Display the prompt and handle user response
-        var promptInterval = setInterval(function () {
-            userResponse = window.confirm('A new ticket has been found. Would you like to open the latest ticket? NOTE: This will end notify mode.');
-            closePrompt();
-        }, 100);
+        });   
+            
     }
 
     observer = new MutationObserver(function (mutations) {
