@@ -100,28 +100,30 @@
   </style>
   <script src="popup.js"></script>
 </head>
-<body>
-  <div id="control">
-    <div id="outer-outline"></div>
-    <div id="inner-outline">
-      <header id="header" role="banner">
-        <span id="title">
-          <h4 id="titletext">Jira+</h4>
-          <h5>ver 0.0.2</h5>
-        </span>
-      </header>
-      <div id="button1">
-        <button id="notify">Notify Mode</button>
-      </div>
-      <div class="slider">
-        <label for="volume-slider">Volume:</label>
-        <input type="range" id="volume-slider" min="0" max="1" step="0.005" value=".5">
-      </div>
-      <div class="slider">
-        <label for="exclusion-slider">Exclusion Amount:</label>
-        <input type="range" id="exclusion-slider" min="0" max="10" value="10">
-      </div>
-    </div>
-  </div>
-</body>
+<body> 
+  <div id="control"> 
+    <div id="outer-outline"></div> 
+    <div id="inner-outline"> 
+      <header id="header" role="banner"> 
+        <span id="title"> 
+          <h4 id="titletext">Jira+</h4> 
+          <h5>ver 0.0.2</h5> 
+        </span> 
+      </header> 
+      <div id="button1"> 
+        <button id="notify">Notify Mode</button> 
+      </div> 
+      <div class="slider"> 
+        <label for="volume-slider" title="Volume of notification">Volume:
+          <input type="range" id="volume-slider" min="0" max="1" step="0.005" value=".5">
+        </label> 
+      </div> 
+      <div class="slider"> 
+        <label for="exclusion-slider" title="Amount of tickets to notify. All the way to the left = 1.">Amount:
+          <input type="range" id="exclusion-slider" min="0" max="10" value="10">
+        </label> 
+      </div> 
+    </div> 
+  </div> 
+</body> 
 </html>

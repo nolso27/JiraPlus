@@ -10,8 +10,17 @@ function notifyMode() {
     var timeoutId;
     var observer;
     var refreshInterval = 30000; // How long it takes for it to recheck for new tickets
+    var originalTitle = document.title;
+    var notifyModeTitle = 'Tab is in Notify Mode';
+    var toggleTitle = false; // Flag to toggle between original and notify mode titles
+
+    function toggleTitleText() {
+        document.title = toggleTitle ? originalTitle : notifyModeTitle;
+        toggleTitle = !toggleTitle;
+    }
 
     function processSearchResults() {
+        document.title = notifyModeTitle;
         console.log('Processing search results...');
         // Process the search results here
         var liElements = document.querySelectorAll('.issue-list li');
@@ -22,6 +31,8 @@ function notifyMode() {
                 exclusionAmount = result.exclusion;
                 if (liElements.length > exclusionAmount) {
                     console.log(liElements.length + ' and ' + exclusionAmount);
+                    console.log('test123');
+                    document.title = 'ALERT: New Ticket Found!';
                     // Prompt the user with a popup
                     var userResponse = false;
 
@@ -40,10 +51,14 @@ function notifyMode() {
                         userResponse = window.confirm('A new ticket has been found. Would you like to open the latest ticket? NOTE: This will end notify mode.');
                         closePrompt();
                     }, 100);
+                } else {
+                    // Reset the toggleTitle flag if no new ticket is found
+                    toggleTitle = false;
+                    // Start the interval for title toggling
+                    setInterval(toggleTitleText, 2000);
                 }
             }
-        });   
-            
+        });
     }
 
     observer = new MutationObserver(function (mutations) {
@@ -51,7 +66,7 @@ function notifyMode() {
             if (mutation.addedNodes.length > 0) {
                 console.log('Search result added');
                 clearTimeout(timeoutId);
-                timeoutId = setTimeout(processSearchResults, 3000);
+                timeoutId = setTimeout(processSearchResults, 5000);
             }
         });
     });
@@ -67,6 +82,7 @@ function notifyMode() {
         console.log('No results container found');
     }
 
+    // Set the refresh interval outside the if condition
     setInterval(function () {
         location.reload(true);
     }, refreshInterval);
