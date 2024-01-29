@@ -7,7 +7,7 @@ function listenForNotify() {
             var notifyProperties = {modeActive: null, notifyTab: null, isTicketActive: null}
             notifyProperties.modeActive = true;
             notifyProperties.notifyTab = message.data;
-            chrome.storage.session.set({ notifyMode: notifyProperties});
+            chrome.storage.local.set({ notifyMode: notifyProperties});
             notifyMode();
         }
     });

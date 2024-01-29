@@ -74,10 +74,65 @@
       padding: 10px;
       margin: 0;
     }
-    #button1 {
+
+    .inputcontainer {
       display: flex;
+      align-items: center;
       justify-content: center;
+      padding: 8px;
     }
+
+    .switch {
+      display: inline-block;
+      height: 34px;
+      position: relative;
+      width: 60px;
+      margin: 0 auto;
+    }
+
+    .switch input {
+      display:none;
+    }
+
+    .checkswitch {
+      background-color: #ccc;
+      bottom: 0;
+      cursor: pointer;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transition: .4s;
+    }
+
+    .checkswitch:before {
+      background-color: #fff;
+      bottom: 4px;
+      content: "";
+      height: 26px;
+      left: 4px;
+      position: absolute;
+      transition: .4s;
+      width: 26px;
+    }
+
+    input:checked + .checkswitch {
+      background-color: #4CAF50;
+    }
+
+    input:checked + .checkswitch:before {
+      transform: translateX(26px);
+    }
+
+    .checkswitch.round {
+      border-radius: 34px;
+    }
+
+    .checkswitch.round:before {
+      border-radius: 50%;
+    }
+
+
     button {
       background-color: #4CAF50;
       color: white;
@@ -110,9 +165,12 @@
           <h5>ver 0.0.2</h5> 
         </span> 
       </header> 
-      <div id="button1"> 
-        <button id="notify">Notify Mode</button> 
-      </div> 
+      <div class="inputcontainer">
+      <label class="switch" for="checkbox">
+      <input type="checkbox" id="checkbox" />
+      <div class="checkswitch round"></div>
+      </label>
+</div>
       <div class="slider"> 
         <label for="volume-slider" title="Volume of notification">Volume:
           <input type="range" id="volume-slider" min="0" max="1" step="0.005" value=".5">

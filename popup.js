@@ -1,18 +1,24 @@
+let tabId
+
 function notify() {
-  chrome.tabs.create({ url: 'https://jira.benco.com/issues/?jql=project = BEN AND status = Untriaged AND assignee in (EMPTY)' }, function (newTab) {
+  chrome.tabs.create({ url: 'https://jira.benco.com/issues/?jql=project = BEN AND status = Untriaged AND assignee in (EMPTY)', active: false}, function (newTab) {
     chrome.runtime.sendMessage({ type: 'notify', data: newTab.id });
+     tabId = newTab.id
   });
 }
 
 window.addEventListener("load", () => {
   // Retrieve stored slider values from long term storage
-  chrome.storage.local.get(["volume", "exclusion"], function (result) {
+  chrome.storage.local.get(["volume", "exclusion", "notify"], function (result) {
     // Set the slider values if they exist in storage
     if (result.volume) {
       document.getElementById("volume-slider").value = result.volume;
     }
     if (result.exclusion) {
       document.getElementById("exclusion-slider").value = result.exclusion;
+    }
+    if (result.notify) {
+      document.getElementById("checkbox").checked = result.notify;
     }
   });
 
@@ -27,5 +33,23 @@ window.addEventListener("load", () => {
     chrome.storage.local.set({ "exclusion": exclusionValue });
   });
 
-  document.getElementById("notify").onclick = notify;
+  var checkbox = document.getElementById("checkbox")
+  
+  checkbox.onclick = function() {notifyModeSwitch()}
+
+  function notifyModeSwitch() {
+    if (checkbox.checked) {
+      chrome.storage.local.set({ "notify": checkbox.checked })
+      console.log("ON", checkbox.checked)
+      notify();
+      
+    }
+
+    else {
+      chrome.storage.local.set({ "notify": checkbox.checked })
+      console.log(tabId)
+    }
+
+  }
+
 });
