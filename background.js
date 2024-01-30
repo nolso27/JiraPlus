@@ -7,12 +7,8 @@ function listenForNotify() {
             var notifyProperties = { modeActive: null, notifyTab: null, isTicketActive: null };
             notifyProperties.modeActive = true;
             notifyProperties.notifyTab = message.data;
-<<<<<<< HEAD
-            chrome.storage.local.set({ notifyMode: notifyProperties});
-=======
             console.log('BG: Notify properties', notifyProperties);
             chrome.storage.local.set({ "notifyMode": notifyProperties });
->>>>>>> working
             notifyMode();
         }
     });
