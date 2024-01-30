@@ -16,7 +16,7 @@
 
     "web_accessible_resources": [
       {
-        "resources": ["audio.html"],
+        "resources": ["audio.html", "bell.svg"],
         "matches": ["<all_urls>"]
       }
     ],
