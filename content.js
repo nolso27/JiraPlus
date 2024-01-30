@@ -110,8 +110,8 @@ function notifyMode() {
 }
 
 function afterWindowLoaded() {
-    chrome.storage.session.get(['notifyMode']).then((result) => {
-        console.log(result.notifyMode);
+    chrome.storage.local.get(['notifyMode']).then((result) => {
+        console.log("notify?:", result.notifyMode);
         if (result.notifyMode.modeActive) {
             notifyMode();
         } else {

@@ -7,7 +7,8 @@ function listenForNotify() {
             var notifyProperties = {modeActive: null, notifyTab: null, isTicketActive: null}
             notifyProperties.modeActive = true;
             notifyProperties.notifyTab = message.data;
-            chrome.storage.local.set({ notifyMode: notifyProperties});
+            console.log('notifyProperties', notifyProperties);
+            chrome.storage.local.set({ "notifyMode": notifyProperties});
             notifyMode();
         }
     });
@@ -74,9 +75,9 @@ async function createOffscreen() {
 }
 
 // Check the value of notifyMode in storage
-chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
+chrome.storage.local.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
 
-chrome.storage.session.get(['notifyMode']).then((result) => {
+chrome.storage.local.get(['notifyMode']).then((result) => {
     console.log(result.notifyMode)
     if (result.notifyMode == null) {
         

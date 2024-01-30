@@ -10,7 +10,7 @@ function notify() {
 
 window.addEventListener("load", () => {
   // Retrieve stored slider values from long term storage
-  chrome.storage.local.get(["volume", "exclusion", "notify", "notifytab"], function (result) {
+  chrome.storage.local.get(["volume", "exclusion", "notifyMode", "check"], function (result) {
     // Set the slider values if they exist in storage
     if (result.volume) {
       document.getElementById("volume-slider").value = result.volume;
@@ -19,9 +19,10 @@ window.addEventListener("load", () => {
       document.getElementById("exclusion-slider").value = result.exclusion;
     }
     if (result.notify) {
-      document.getElementById("checkbox").checked = result.notify;
+      document.getElementById("checkbox").checked = result.check;
     }
-    if (result.notifytab) {
+    if (result.notifyMode) {
+      console.log(result.notifyMode)
       tabId = result.notifytab;
     }
   });
@@ -43,19 +44,29 @@ window.addEventListener("load", () => {
 
   function notifyModeSwitch() {
     if (checkbox.checked) {
-      chrome.storage.local.set({ "notify": checkbox.checked })
+      chrome.storage.local.set({ "check": checkbox.checked })
       console.log("ON", checkbox.checked)
       notify();
       
     }
 
     else {
-      chrome.storage.local.set({ "notify": checkbox.checked })
+      chrome.storage.local.set({ "check": checkbox.checked })
       console.log(tabId);
       chrome.tabs.remove(tabId);
       
     }
 
   }
+  
+  chrome.tabs.onRemoved.addListener(function (removedTabId) {
+    if (removedTabId === tabId) {
+      // Notify background script to disable notify mode when tab is closed
+      chrome.storage.local.set({ ["notifyMode"]: { modeActive: false } });
+      checkbox.checked = false;
+      chrome.storage.local.set({ "check": checkbox.checked })
+      console.log(checkbox.checked);
+    }
+  });
 
 });
