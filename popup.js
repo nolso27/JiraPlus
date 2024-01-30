@@ -1,7 +1,7 @@
 let tabId
 
 function notify() {
-  chrome.tabs.create({ url: 'https://jira.benco.com/issues/?jql=project = BEN AND status = "In Progress" AND assignee in (EMPTY)', active: false}, function (newTab) {
+  chrome.tabs.create({ url: 'https://jira.benco.com/issues/?jql=project = BEN AND status = Unassigned AND assignee in (EMPTY)', active: false}, function (newTab) {
     chrome.runtime.sendMessage({ type: 'notify', data: newTab.id });
     tabId = newTab.id;
     console.log('POPUP: New tab created for notification. Tab ID:', tabId);
