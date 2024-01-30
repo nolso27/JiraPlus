@@ -125,9 +125,14 @@ function notifyMode() {
 }
 
 function afterWindowLoaded() {
+<<<<<<< HEAD
+    chrome.storage.local.get(['notifyMode']).then((result) => {
+        console.log(result.notifyMode);
+=======
     console.log('Window loaded');
     chrome.storage.local.get(['notifyMode']).then((result) => {
         console.log("Notify mode active?", result.notifyMode.modeActive);
+>>>>>>> working
         if (result.notifyMode.modeActive) {
             try{
                 updateHTML();
