@@ -27,6 +27,7 @@ window.addEventListener("load", () => {
       tabId = result.notifyMode.notifyTab;
       checkbox.checked = result.notifyMode.modeActive;
       console.log("Checkbox set to:", result.notifyMode.modeActive)
+      
     }
   });
 

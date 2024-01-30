@@ -9,6 +9,8 @@ function listenForNotify() {
             notifyProperties.notifyTab = message.data;
             console.log('BG: Notify properties', notifyProperties);
             chrome.storage.local.set({ "notifyMode": notifyProperties });
+            console.log(message.data)
+            chrome.browserAction.setIcon({ path: 'icon.png', tabId: message.data})
             notifyMode();
         }
     });

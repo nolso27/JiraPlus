@@ -16,7 +16,7 @@
 
     "web_accessible_resources": [
       {
-        "resources": ["audio.html", "bell.svg"],
+        "resources": ["audio.html", "bell.svg", "icon.png"],
         "matches": ["<all_urls>"]
       }
     ],
@@ -27,7 +27,7 @@
 
     "content_scripts": [{
       "js": ["content.js"],
-      "matches": ["https://jira.benco.com/*?jql=*"]
+      "matches": ["https://jira.benco.com/*?jql=*", "https://jira.benco.com/browse/*"]
       
     }]
     
