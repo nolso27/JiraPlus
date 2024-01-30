@@ -1,15 +1,16 @@
-let tabId
+let tabId;
 
 function notify() {
   chrome.tabs.create({ url: 'https://jira.benco.com/issues/?jql=project = BEN AND status = Untriaged AND assignee in (EMPTY)', active: false}, function (newTab) {
     chrome.runtime.sendMessage({ type: 'notify', data: newTab.id });
-     tabId = newTab.id
+    tabId = newTab.id;
+    chrome.storage.local.set({"notifytab": tabId })
   });
 }
 
 window.addEventListener("load", () => {
   // Retrieve stored slider values from long term storage
-  chrome.storage.local.get(["volume", "exclusion", "notify"], function (result) {
+  chrome.storage.local.get(["volume", "exclusion", "notify", "notifytab"], function (result) {
     // Set the slider values if they exist in storage
     if (result.volume) {
       document.getElementById("volume-slider").value = result.volume;
@@ -19,6 +20,9 @@ window.addEventListener("load", () => {
     }
     if (result.notify) {
       document.getElementById("checkbox").checked = result.notify;
+    }
+    if (result.notifytab) {
+      tabId = result.notifytab;
     }
   });
 
@@ -47,7 +51,9 @@ window.addEventListener("load", () => {
 
     else {
       chrome.storage.local.set({ "notify": checkbox.checked })
-      console.log(tabId)
+      console.log(tabId);
+      chrome.tabs.remove(tabId);
+      
     }
 
   }
