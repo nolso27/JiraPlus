@@ -4,7 +4,7 @@ function listenForNotify() {
     chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         if (message.type === 'notify') {
             console.log('BG: Notify button was pressed');
-            var notifyProperties = { modeActive: null, notifyTab: null, isTicketActive: null };
+            var notifyProperties = { modeActive: null, notifyTab: null};
             notifyProperties.modeActive = true;
             notifyProperties.notifyTab = message.data;
             console.log('BG: Notify properties', notifyProperties);
