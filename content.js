@@ -16,7 +16,7 @@ function jiraSearch() {
         console.log("Notify mode active?", result.notifyMode.modeActive);
         if (result.notifyMode.modeActive) {
             try{
-                updateHTML();
+                searchHTML();
             } catch (e) {
                 console.error("Could not finish updating page content: ", e)
             }
@@ -36,23 +36,25 @@ function notifyMode() {
 
     var timeoutId;
     var observer;
-    var refreshInterval = 30000; // How long it takes for it to recheck for new tickets
+    var refreshInterval = 20000; // How long it takes for it to recheck for new tickets
 
     // Initialize the observer here
     observer = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
+            console.log('Search result added');
             if (mutation.addedNodes.length > 0) {
-                console.log('Search result added');
+                console.log(mutation.addedNodes);
                 clearTimeout(timeoutId);
-                timeoutId = setTimeout(processSearchResults, 5000);
+                timeoutId = setTimeout(processSearchResults, 500); // If no new results are found in .5 seconds process results.
             }
         });
     });
 
-    var elements = document.getElementsByClassName('search-results');
-    if (elements.length > 0) {
+    if (document.getElementsByClassName('search-results').length > 0) {
+        console.log('There are search results loading')
         if (document.getElementsByClassName('issue-list')[0].getElementsByTagName('li').length === 0) {
-            observer.observe(elements[0], { childList: true, subtree: true });
+            console.log(document.getElementsByClassName('issue-list')[0]);
+            observer.observe(document.getElementsByClassName('list-content')[0], { childList: true});
         } else {
             console.log('Issue list already populated');
             processSearchResults();
@@ -61,56 +63,7 @@ function notifyMode() {
         console.log('No results container found');
     }
 
-    function processSearchResults() {
-        
-        console.log('Processing search results...');
-        // Process the search results here
-        var liElements = document.querySelectorAll('.issue-list li');
-
-        chrome.storage.local.get(["exclusion"], function (result) {
-            if (result.exclusion) {
-                console.log('Retrieved exclusion:', result.exclusion);
-                exclusionAmount = result.exclusion;
-                if (liElements.length > exclusionAmount) {
-                    console.log(`New ticket found (${liElements.length} > ${exclusionAmount})`);
-
-                    // Send a message to the background script
-                    chrome.runtime.sendMessage({ type: 'resultfound' });
-                    
-                    // var audio = new Audio(chrome.runtime.getURL('notif1.mp3 '));
-                    // audio.play();
-
-
-                    // Prompt the user with a popup
-                    var userResponse = false;
-                    
-                    // Prompt the user with a popup
-                    var userResponse = false;
-
-                    function closePrompt() {
-                        clearInterval(promptInterval);
-
-                        if (userResponse) {
-
-                            chrome.storage.local.set({ "notifyMode": { modeActive: false } });
-                            window.location.href = document.getElementsByClassName('splitview-issue-link')[0].href;
-                        } else {
-                            console.log('User declined to continue or the timeout expired.');
-                        }
-                    }
-
-                    // Display the prompt and handle user response
-                    var promptInterval = setInterval(function () {
-                        userResponse = window.confirm('A new ticket has been found. Would you like to open the latest ticket? NOTE: This will end notify mode.');
-                        closePrompt();
-                    }, 100);
-                } else {
-                    console.log('No new tickets found or notification already sent');
-                }
-            }
-        });
-    }
-
+    //    
     
 
     // Set the refresh interval outside the if condition
@@ -120,18 +73,33 @@ function notifyMode() {
         clearTimeout(timeoutId);
         location.reload(true);
     }, refreshInterval);
+}
 
-    // Handle visibility change
-    document.addEventListener('visibilitychange', function () {
-        if (document.visibilityState === 'visible') {
-            console.log('Page is visible, triggering search results processing...');
-            // Page is visible, trigger the search results processing
-            processSearchResults();
-        } else {
-            console.log("Page is no longer ac")
+function processSearchResults() {
+    
+    console.log('Processing search results...');
+    // Process the search results here
+    var liElements = document.querySelectorAll('.issue-list li');
+
+    chrome.storage.local.get(["exclusion"], function (result) {
+        if (result.exclusion) {
+            console.log('Retrieved exclusion:', result.exclusion);
+            exclusionAmount = result.exclusion;
+            if (liElements.length > exclusionAmount) {
+                console.log(`New ticket found (${liElements.length} > ${exclusionAmount})`);
+
+                // Send a message to the background script
+                chrome.runtime.sendMessage({ type: 'resultfound' });
+                
+
+            } else {
+                console.log('No new tickets found');
+            }
+            resultHTML(exclusionAmount, liElements.length);
         }
     });
 }
+ 
 
 
 function jiraBrowse() {
@@ -140,15 +108,14 @@ function jiraBrowse() {
     var acctNum = document.getElementById("customfield_12210-val").textContent.replace(/^\D+/g, '').trim();
     var div1 = document.querySelector('.module.toggle-wrap');
     div1.insertAdjacentHTML('afterend', `<div class="module toggle-wrap"><div class="mod-header"><button class="aui-button toggle-title" aria-label="Jira+" aria-controls="Jira+-module" aria-expanded="true" resolved=""><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><g fill="none" fill-rule="evenodd"><path d="M3.29175 4.793c-.389.392-.389 1.027 0 1.419l2.939 2.965c.218.215.5.322.779.322s.556-.107.769-.322l2.93-2.955c.388-.392.388-1.027 0-1.419-.389-.392-1.018-.392-1.406 0l-2.298 2.317-2.307-2.327c-.194-.195-.449-.293-.703-.293-.255 0-.51.098-.703.293z" fill="#344563"></path></g></svg></button><h4 class="toggle-title" id="details-module-label">Jira+</h4><ul class="ops"></ul></div><div class= "mod-content"><div id="customfieldmodule"><div class="aui-tabs horizontal-tabs" id="customfield-tabs" role="application"><div class=" active-pane"> <ul class="property-list"> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Ticket History:</label> </strong> <div data-fieldtype="textfield" class="value"> <a id="ticket-history" href='https://jira.benco.com/issues/?jql=project = BEN AND "Account Number" ~ "${acctNum}" ORDER BY created DESC'>Click Here</a> </div> </div> </li> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Placeholder</label> </strong> <div data-fieldtype="textfield" class="value"> placeholder </div> </div> </li> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Placeholder</label> </strong> <div data-fieldtype="textfield" class="value"> placeholder </div> </div> </li> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Place holder</label> </strong> <div data-fieldtype="textfield" class="value"> placeholder </div> </div> </li>   </ul> </div></div></div></div></div>`);
-    document.getElementById('ticket-history').onclick = function(){chrome.storage.local.set({ "notifyMode": { modeActive: false } });}
+    document.getElementById('ticket-history').onclick = disableNotify;
 }
 
-function updateHTML() {
+function searchHTML() {
     document.getElementsByClassName("issue-search-header")[0].remove();
     document.getElementById("header").remove();
     document.getElementById("navigator-sidebar").remove();
     document.getElementsByClassName("navigator-sidebar collapsed")[0].remove();
-
 
 
     var results = document.getElementsByClassName("simple-issue-list"); // Check if there are search results
@@ -166,7 +133,27 @@ function updateHTML() {
         document.getElementsByClassName("pagination-view")[0].remove();
         document.getElementsByClassName("detail-panel")[0].remove();
         document.getElementsByClassName("ui-sidebar")[0].remove();
-        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", '<div class="no-results no-results-message" style="background-image: url(&quot;chrome-extension://nfelnemkdibpebjbbmeloldodgelgiel/bell.gif&quot;); margin-top: 10%;"><h2>We found a ticket!</h2><p class="no-results-hint">You can view more info by clicking "Ok" at the top.</p></div>')
-        console.log("pushing")
     }
 }
+
+function getSelectedLink() {
+    disableNotify();
+    window.location.href = document.getElementsByClassName("focused")[0].getElementsByClassName('splitview-issue-link')[0].href; 
+}
+
+function disableNotify() {
+    chrome.storage.local.set({ "notifyMode": { modeActive: false } });
+}
+
+function resultHTML(exclusion, resultLength) {
+    
+    if (resultLength > exclusion) {
+        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", `<div class="no-results no-results-message" style="position:relative;background-image: url(&quot;chrome-extension://nfelnemkdibpebjbbmeloldodgelgiel/bell.gif&quot;); margin-top: 10%;"><a class="ticketlink"style="position:absolute;width: 140px;height:160px;top: 0;left: 0; right: 0;margin-left: auto; margin-right: auto;"></a><h2>We found a ticket! Click <a class="ticketlink">here</a> or the bell above to continue to the selected ticket.</h2><p class="no-results-hint">NOTE: This will end notify mode.</p></div>`)
+        document.getElementsByClassName("ticketlink")[0].onclick = getSelectedLink;
+        document.getElementsByClassName("ticketlink")[1].onclick = getSelectedLink;
+    } else {
+        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", '<div class="no-results no-results-message" style="background-image: url(&quot;chrome-extension://nfelnemkdibpebjbbmeloldodgelgiel/bell.png&quot;); margin-top: 10%;"><h2>You are in notify mode. You will hear a ding when we find more tickets than your set amount.</h2><p class="no-results-hint">Amount of tickets are not equal or greater than set amount. Check extension window to adjust if necessary.</p></div>  ')
+
+    }
+}
+
