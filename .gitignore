@@ -1,0 +1,126 @@
+# Node.js
+node_modules/
+
+# Dependency directories
+jspm_packages/
+typings/
+
+# OSX
+.DS_Store
+
+# Editor files
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+
+# Visual Studio Code directories
+.idea/
+.vscode/
+*.code-workspace
+
+# Webpack
+dist/
+build/
+
+# Compiled files
+*.min.js
+*.min.css
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Environment files
+.env
+
+# Node.js debugging
+node_modules/
+*.log
+
+# Package files
+package-lock.json
+yarn.lock
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+
+# Dependency directories
+/bower_components/
+/vendor/
+
+# Compiled Python files
+*.pyc
+
+# Compiled Java files
+*.class
+
+# Compiled Ruby files
+*.rbc
+
+# Compiled TypeScript files
+*.tsbuildinfo
+
+# Compiled PHP files
+*.php5
+
+# Composer
+/vendor/
+
+# Laravel
+/public/storage
+/storage/*.key
+.env
+
+# Symfony
+/var/
+/vendor/
+/web/bundles/
+
+# Django
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Windows thumbnail cache files
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# VS Code directories
+.vscode/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+
+# Eclipse
+.project
+.classpath
+.settings/
+GirlfriendGenerator.code-workspace
