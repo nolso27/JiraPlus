@@ -3,156 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JiraExt</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #222;
-      margin: 0;
-      padding: 0;
-    }
-    #control {
-      margin: 0;
-      width: 200px;
-      height: 250px;
-      background-color: #333;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #outer-outline {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 2px solid white;
-      box-sizing: border-box;
-      z-index: 2;
-    }
-    #inner-outline {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      right: 2px;
-      bottom: 2px;
-      border: 2px solid black;
-      box-sizing: border-box;
-      z-index: 3;
-    }
-    #header {
-      display: flex;
-      align-items: center;
-      box-sizing: border-box;
-      padding: 10px;
-      background-color: #0747a6;
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      border-bottom: 2px solid black;
-    }
-    #title {
-      flex-grow: 1;
-      text-align: center;
-    }
-    #titletext {
-      margin: 0;
-      color: #fff;
-    }
-    #test {
-      height: 60px;
-    }
-    h5 {
-      color: #fff;
-      margin: 2px;
-    }
-    p {
-      color: #ddd;
-      white-space: break-spaces;
-      padding: 10px;
-      margin: 0;
-    }
-
-    .inputcontainer {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px;
-    }
-
-    .switch {
-      display: inline-block;
-      height: 34px;
-      position: relative;
-      width: 60px;
-      margin: 0 auto;
-    }
-
-    .switch input {
-      display:none;
-    }
-
-    .checkswitch {
-      background-color: #ccc;
-      bottom: 0;
-      cursor: pointer;
-      left: 0;
-      position: absolute;
-      right: 0;
-      top: 0;
-      transition: .4s;
-    }
-
-    .checkswitch:before {
-      background-color: #fff;
-      bottom: 4px;
-      content: "";
-      height: 26px;
-      left: 4px;
-      position: absolute;
-      transition: .4s;
-      width: 26px;
-    }
-
-    input:checked + .checkswitch {
-      background-color: #4CAF50;
-    }
-
-    input:checked + .checkswitch:before {
-      transform: translateX(26px);
-    }
-
-    .checkswitch.round {
-      border-radius: 34px;
-    }
-
-    .checkswitch.round:before {
-      border-radius: 50%;
-    }
-
-
-    button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px;
-      border: 2px solid black;
-      border-radius: 5px;
-      cursor: pointer;
-      margin: 10px;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .slider {
-      width: 80%;
-      margin: 10px;
-    }
-    label {
-      color: white;
-    }
-  </style>
+  <title>Jira+</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
   <script src="popup.js"></script>
 </head>
 <body> 
@@ -165,22 +17,26 @@
           <h5>ver 0.4</h5> 
         </span> 
       </header> 
-      <div class="inputcontainer">
-      <label class="switch" for="checkbox">
-        <input type="checkbox" id="checkbox" title="Enable notify mode" />
-      <div class="checkswitch round"></div>
-      </label>
-</div>
-      <div class="slider"> 
-        <label for="volume-slider" title="Volume of notification">Volume:
+      <div class="notifycontainer">
+        <label class="switch" for="checkbox">
+          <input type="checkbox" id="checkbox" title="Enable notify mode" />
+          <div class="checkswitch round"></div>
+        </label>
+      </div>
+      <div class="slider">
+        <label for="volume-slider" title="Volume of notification">
+          Volume:
           <input type="range" id="volume-slider" min="0" max="1" step="0.005" value=".5">
-        </label> 
-      </div> 
-      <div class="slider"> 
-        <label for="exclusion-slider" title="Amount of tickets to notify. All the way to the left = 1.">Amount:
-          <input type="range" id="exclusion-slider" min="0" max="10" value="0">
-        </label> 
-      </div> 
+          <span class="tooltip" id="volume-tooltip"></span>
+        </label>
+      </div>
+      <div class="slider">
+        <label for="exclusion-slider" title="Amount of tickets required to notify.">
+          Amount:
+          <input type="range" id="exclusion-slider" min="0" max="9" value="0">
+          <span class="tooltip" id="exclusion-tooltip">0</span>
+        </label>
+      </div>
     </div> 
   </div> 
 </body> 

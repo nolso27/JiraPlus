@@ -32,10 +32,7 @@ function jiraSearch() {
 
 
 function notifyMode() {
-    console.log('Entering notifyMode function');
-
-    // Variable to track if notification has already been sent
-    var notificationSent = false;
+    console.log('Entering notifyMode function')
 
     var timeoutId;
     var observer;
@@ -74,16 +71,15 @@ function notifyMode() {
             if (result.exclusion) {
                 console.log('Retrieved exclusion:', result.exclusion);
                 exclusionAmount = result.exclusion;
-                if (liElements.length > exclusionAmount && !notificationSent) {
+                if (liElements.length > exclusionAmount) {
                     console.log(`New ticket found (${liElements.length} > ${exclusionAmount})`);
 
                     // Send a message to the background script
                     chrome.runtime.sendMessage({ type: 'resultfound' });
-                    var audio = new Audio(chrome.runtime.getURL('notif1.mp3 '));
-                    audio.play();
+                    
+                    // var audio = new Audio(chrome.runtime.getURL('notif1.mp3 '));
+                    // audio.play();
 
-                    // Set the notificationSent flag to true
-                    notificationSent = true;
 
                     // Prompt the user with a popup
                     var userResponse = false;
@@ -95,7 +91,6 @@ function notifyMode() {
                         clearInterval(promptInterval);
 
                         if (userResponse) {
-                            // Set the notificationSent flag to true
 
                             chrome.storage.local.set({ "notifyMode": { modeActive: false } });
                             window.location.href = document.getElementsByClassName('splitview-issue-link')[0].href;
@@ -133,7 +128,7 @@ function notifyMode() {
             // Page is visible, trigger the search results processing
             processSearchResults();
         } else {
-            console.error("Could not process result: Page did not load in alloted time.")
+            console.log("Page is no longer ac")
         }
     });
 }
@@ -171,7 +166,7 @@ function updateHTML() {
         document.getElementsByClassName("pagination-view")[0].remove();
         document.getElementsByClassName("detail-panel")[0].remove();
         document.getElementsByClassName("ui-sidebar")[0].remove();
-        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", '<div class="no-results no-results-message" style="background-image: url(&quot;chrome-extension://nfelnemkdibpebjbbmeloldodgelgiel/bell.gif&quot;); margin-top: 10%;"><h2>We found a ticket!!</h2><p class="no-results-hint">Time to wake up.</p></div>')
+        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", '<div class="no-results no-results-message" style="background-image: url(&quot;chrome-extension://nfelnemkdibpebjbbmeloldodgelgiel/bell.gif&quot;); margin-top: 10%;"><h2>We found a ticket!</h2><p class="no-results-hint">You can view more info by clicking "Ok" at the top.</p></div>')
         console.log("pushing")
     }
 }

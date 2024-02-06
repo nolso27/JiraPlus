@@ -1,5 +1,4 @@
-let tabId
-
+let tabId;
 function notify() {
   chrome.tabs.create({ url: 'https://jira.benco.com/issues/?jql=project = BEN AND status = Untriaged AND assignee in (EMPTY)', active: true}, function (newTab) {
     chrome.runtime.sendMessage({ type: 'notify', data: newTab.id });
@@ -15,9 +14,11 @@ window.addEventListener("load", () => {
     // Set the slider values if they exist in storage
     if (result.volume) {
       document.getElementById("volume-slider").value = result.volume;
+      document.getElementById("volume-tooltip").textContent = (result.volume * 100).toFixed(0) + "%";
     }
     if (result.exclusion) {
       document.getElementById("exclusion-slider").value = result.exclusion;
+      document.getElementById("exclusion-tooltip").textContent = (parseInt(result.exclusion) + 1);
     }
     if (result.notify) {
       document.getElementById("checkbox").checked = result.check;
@@ -31,17 +32,16 @@ window.addEventListener("load", () => {
     }
   });
 
-  // Save slider values to long term storage when moved
+  // Save slider values to long term storage and update tooltips when moved
   document.getElementById("volume-slider").addEventListener("input", function () {
-    var volumeValue = this.value;
-    chrome.storage.local.set({ "volume": volumeValue });
-    console.log('POPUP: Volume slider value set to', volumeValue);
+    var volumePercentage = (this.value * 100).toFixed(0); // Calculate the percentage value
+    chrome.storage.local.set({ "volume": this.value });
+    document.getElementById("volume-tooltip").textContent = volumePercentage + "%"; // Update the tooltip with the percentage value
   });
 
   document.getElementById("exclusion-slider").addEventListener("input", function () {
-    var exclusionValue = this.value;
-    chrome.storage.local.set({ "exclusion": exclusionValue });
-    console.log('POPUP: Exclusion slider value set to', exclusionValue);
+    chrome.storage.local.set({ "exclusion": this.value });
+    document.getElementById("exclusion-tooltip").textContent = (parseInt(this.value) + 1);
   });
 
   
@@ -80,3 +80,9 @@ window.addEventListener("load", () => {
     }
   });
 });
+// Try to focus notify window when ticket is detected
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//   if (message.type === 'resultfound') {
+//     chrome.tabs.update(tabId, {active: true});
+//   }
+// });

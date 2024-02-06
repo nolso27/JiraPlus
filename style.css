@@ -1,0 +1,189 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #222;
+    margin: 0;
+    padding: 0;
+}
+
+#control {
+    margin: 0;
+    width: 200px;
+    height: 250px;
+    background-color: #333;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#outer-outline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid white;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+#inner-outline {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border: 2px solid black;
+    box-sizing: border-box;
+    z-index: 3;
+}
+
+#header {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 10px;
+    background-color: #0747a6;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    border-bottom: 2px solid black;
+}
+
+#title {
+    flex-grow: 1;
+    text-align: center;
+}
+
+#titletext {
+    margin: 0;
+    color: #fff;
+}
+
+#test {
+    height: 60px;
+}
+
+h5 {
+    color: #fff;
+    margin: 2px;
+}
+
+p {
+    color: #ddd;
+    white-space: break-spaces;
+    padding: 10px;
+    margin: 0;
+}
+
+.notifycontainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+.switch {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 60px;
+    margin: 0 auto;
+}
+
+.switch input {
+    display:none;
+}
+
+.checkswitch {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+}
+
+.checkswitch:before {
+    background-color: #fff;
+    bottom: 4px;
+    content: "";
+    height: 26px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 26px;
+}
+
+input:checked + .checkswitch {
+    background-color: #4CAF50;
+}
+
+input:checked + .checkswitch:before {
+    transform: translateX(26px);
+}
+
+.checkswitch.round {
+    border-radius: 34px;
+}
+
+.checkswitch.round:before {
+    border-radius: 50%;
+}
+
+.slider {
+    width: 80%;
+    margin: 10px;
+    position: relative;
+}
+
+label {
+    color: white;
+}
+
+.tooltip {
+    position: absolute;
+    bottom: calc(40% + 10px);
+    left: 50%;
+    transform: translateX(-75%);
+    padding: 5px;
+    background-color: #777777;
+    color: #fff;
+    border-radius: 5px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    width: 30px; /* Adjust the width as desired */
+    text-align: center; /* Center the text within the tooltip */
+    white-space: nowrap;
+}
+
+.slider:hover .tooltip {
+    opacity: 1;
+}
+
+.tooltip::before {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #777777;
+    z-index: 1;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: calc(100% - 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #777777;
+    z-index: 2;
+    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+}
