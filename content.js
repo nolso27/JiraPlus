@@ -121,7 +121,7 @@ function searchHTML() {
     var results = document.getElementsByClassName("simple-issue-list"); // Check if there are search results
     console.log(results.length)
     if (results.length === 0) {
-        document.querySelector(".no-results.no-results-message").style.backgroundImage = `url(${chrome.runtime.getURL('bell.png')})`;
+        document.querySelector(".no-results.no-results-message").style.backgroundImage = `url(${chrome.runtime.getURL('bell.svg')})`;
         document.querySelector(".no-results.no-results-message h2").innerHTML = "You are in notify mode. You will hear a ding when we find a ticket.";
         document.querySelector(".no-results.no-results-message p").innerHTML = 'Nothing to see here.';
         document.querySelector(".navigator-content.empty-results").style.display = "flex";
@@ -152,7 +152,7 @@ function resultHTML(exclusion, resultLength) {
         document.getElementsByClassName("ticketlink")[0].onclick = getSelectedLink;
         document.getElementsByClassName("ticketlink")[1].onclick = getSelectedLink;
     } else {
-        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", '<div class="no-results no-results-message" style="background-image: url(&quot;chrome-extension://nfelnemkdibpebjbbmeloldodgelgiel/bell.png&quot;); margin-top: 10%;"><h2>You are in notify mode. You will hear a ding when we find more tickets than your set amount.</h2><p class="no-results-hint">Amount of tickets are not equal or greater than set amount. Check extension window to adjust if necessary.</p></div>  ')
+        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", '<div class="no-results no-results-message" style="background-image: url(&quot;chrome-extension://nfelnemkdibpebjbbmeloldodgelgiel/svg.png&quot;); margin-top: 10%;"><h2>You are in notify mode. You will hear a ding when we find more tickets than your set amount.</h2><p class="no-results-hint">Amount of tickets are not equal or greater than set amount. Check extension window to adjust if necessary.</p></div>  ')
 
     }
 }

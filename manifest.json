@@ -1,13 +1,12 @@
 {
     "manifest_version": 3,
-  
+
     "name": "Jira+",
     "description": "Provides additional helpful functionality to Jira",
     "version": "0.0.2",
     "permissions": [
       "tabs",
       "storage",
-      "notifications",
       "offscreen"
     ],
     "background": {
@@ -16,7 +15,7 @@
 
     "web_accessible_resources": [
       {
-        "resources": ["audio.html", "bell.svg", "icon.png", "notif1.mp3", "bell.gif", "bell.png"],
+        "resources": ["bell.svg", "icon.png", "notif1.mp3", "bell.gif"],
         "matches": ["<all_urls>"]
       }
     ],
@@ -28,7 +27,7 @@
     "content_scripts": [{
       "js": ["content.js"],
       "matches": ["https://jira.benco.com/*?jql=*", "https://jira.benco.com/browse/*"]
-      
+
     }]
-    
+
   }
