@@ -70,15 +70,7 @@ window.addEventListener("load", () => {
     }
   }
   
-  chrome.tabs.onRemoved.addListener(function (removedTabId) {
-    if (removedTabId === tabId) {
-      // Notify background script to disable notify mode when tab is closed
-      chrome.storage.local.set({ ["notifyMode"]: { modeActive: false } });
-      checkbox.checked = false;
-      chrome.storage.local.set({ "check": checkbox.checked });
-      console.log('POPUP: Tab removed. Notify mode disabled. Checkbox checked:', checkbox.checked);
-    }
-  });
+  
 });
 // Try to focus notify window when ticket is detected
 // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
