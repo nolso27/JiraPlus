@@ -1,42 +1,38 @@
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) { // 
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => { // 
     if (message.type === 'notify') {
         console.log('BG: Notify button was pressed');
-        var notifyProperties = { modeActive: null, notifyTab: null};
-        notifyProperties.modeActive = true;
-        notifyProperties.notifyTab = message.data;
-        console.log('BG: Notify properties', notifyProperties);
-        chrome.storage.local.set({ "notifyMode": notifyProperties });
-        console.log(message.data)
+        chrome.storage.local.set({ "notifyMode":  { modeActive: true, notifyTab: message.data} });
         try {
             chrome.browserAction.setIcon({ path: 'icon.png', tabId: message.data});
         } catch (e) {
             console.error(e);
         }
     }
-});
 
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'resultfound') {
-        console.log("TEST")
         console.log(`BG: Result found!`);
         // createNotification();
 
         playSound();
     }
+
 });
 
 
 
 chrome.tabs.onRemoved.addListener(function (removedTabId) {
     chrome.storage.local.get(['notifyMode'], function (result) {
-        if (removedTabId === result.notifyMode.notifyTab) {
-            // Notify background script to disable notify mode when tab is closed
-            chrome.storage.local.set({ ["notifyMode"]: { modeActive: false } });
-            checkbox.checked = false;
-            chrome.storage.local.set({ "check": checkbox.checked });
-            console.log('POPUP: Tab removed. Notify mode disabled. Checkbox checked:', checkbox.checked);
-          }
+        if(result){
+            if (removedTabId === result.notifyMode.notifyTab) {
+                // Notify background script to disable notify mode when tab is closed
+                chrome.storage.local.set({ ["notifyMode"]: { modeActive: false } });
+                checkbox.checked = false;
+                chrome.storage.local.set({ "check": checkbox.checked });
+                console.log('POPUP: Tab removed. Notify mode disabled. Checkbox checked:', checkbox.checked);
+              }
+        }
+        
 
 
     });

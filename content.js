@@ -100,7 +100,8 @@ function processSearchResults() {
     });
 }
  
-
+var bellSvg = chrome.runtime.getURL('bell.svg');
+var bellGif = chrome.runtime.getURL('bell.gif');
 
 function jiraBrowse() {
     // Get the div with the ID customfield-panel-1
@@ -121,7 +122,7 @@ function searchHTML() {
     var results = document.getElementsByClassName("simple-issue-list"); // Check if there are search results
     console.log(results.length)
     if (results.length === 0) {
-        document.querySelector(".no-results.no-results-message").style.backgroundImage = `url(${chrome.runtime.getURL('bell.svg')})`;
+        document.querySelector(".no-results.no-results-message").style.backgroundImage = `url(${bellSvg})`;
         document.querySelector(".no-results.no-results-message h2").innerHTML = "You are in notify mode. You will hear a ding when we find a ticket.";
         document.querySelector(".no-results.no-results-message p").innerHTML = 'Nothing to see here.';
         document.querySelector(".navigator-content.empty-results").style.display = "flex";
@@ -148,11 +149,11 @@ function disableNotify() {
 function resultHTML(exclusion, resultLength) {
     
     if (resultLength > exclusion) {
-        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", `<div class="no-results no-results-message" style="position:relative;background-image: url(&quot;chrome-extension://nfelnemkdibpebjbbmeloldodgelgiel/bell.gif&quot;); margin-top: 10%;"><a class="ticketlink"style="position:absolute;width: 140px;height:160px;top: 0;left: 0; right: 0;margin-left: auto; margin-right: auto;"></a><h2>We found a ticket! Click <a class="ticketlink">here</a> or the bell above to continue to the selected ticket.</h2><p class="no-results-hint">NOTE: This will end notify mode.</p></div>`)
+        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", `<div class="no-results no-results-message" style="position:relative;background-image: url(&quot;${bellGif}&quot;); margin-top: 10%;"><a class="ticketlink"style="position:absolute;width: 140px;height:160px;top: 0;left: 0; right: 0;margin-left: auto; margin-right: auto;"></a><h2>We found a ticket! Click <a class="ticketlink">here</a> or the bell above to continue to the selected ticket.</h2><p class="no-results-hint">NOTE: This will end notify mode.</p></div>`)
         document.getElementsByClassName("ticketlink")[0].onclick = getSelectedLink;
         document.getElementsByClassName("ticketlink")[1].onclick = getSelectedLink;
     } else {
-        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", '<div class="no-results no-results-message" style="background-image: url(&quot;chrome-extension://nfelnemkdibpebjbbmeloldodgelgiel/svg.png&quot;); margin-top: 10%;"><h2>You are in notify mode. You will hear a ding when we find more tickets than your set amount.</h2><p class="no-results-hint">Amount of tickets are not equal or greater than set amount. Check extension window to adjust if necessary.</p></div>  ')
+        document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", `<div class="no-results no-results-message" style="background-image: url(&quot;${bellSvg}&quot;); margin-top: 10%;"><h2>You are in notify mode. You will hear a ding when we find more tickets than your set amount.</h2><p class="no-results-hint">Amount of tickets are not equal or greater than set amount. Check extension window to adjust if necessary.</p></div>  `)
 
     }
 }
