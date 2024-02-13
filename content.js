@@ -80,6 +80,8 @@ function processSearchResults() {
     console.log('Processing search results...');
     // Process the search results here
     var liElements = document.querySelectorAll('.issue-list li');
+    liElements[0].click();
+    
 
     chrome.storage.local.get(["exclusion"], function (result) {
         if (result.exclusion) {
