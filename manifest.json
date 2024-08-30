@@ -3,7 +3,8 @@
 
     "name": "Jira+",
     "description": "Provides additional helpful functionality to Jira",
-    "version": "0.6",
+    "version": "0.6.2",
+    "version_name": "0.6 Pre-Release 2",
     "icons": {"32": "icon32.png",
       "48": "icon48.png",
       "64": "icon64.png",

@@ -159,7 +159,12 @@ function searchHTML() {
     document.getElementById("header").remove();
     document.getElementsByClassName("issue-search-header")[0].remove();
     document.getElementById("navigator-sidebar").remove();
-    document.getElementsByClassName("navigator-sidebar collapsed")[0].remove();
+    try {
+      document.getElementsByClassName("navigator-sidebar collapsed")[0].remove();
+    }
+    catch (e) {
+      console.log("No sidebar to remove");
+    }  
 
 
     var results = document.getElementsByClassName("simple-issue-list"); // Check if there are search results
