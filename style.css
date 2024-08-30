@@ -1,163 +1,128 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #222;
+    font-family: sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f6f6f6;
+    color: #333;
 }
 
 #control {
+    width: 220px;
+    padding: 0px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#header {
+    background-color: #005ea0; /* Jira blue */
+    padding: 10px;
+    border-radius: 4px 4px 0 0;
+    text-align: center;
+    color: white;
+}
+
+#title {
     margin: 0;
-    width: 200px;
-    height: 250px;
-    background-color: #333;
-    position: relative;
-    overflow: hidden;
+}
+
+#titletext {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#content {
+    padding: 0 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-#outer-outline {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 2px solid white;
-    box-sizing: border-box;
-    z-index: 2;
-}
-
-#inner-outline {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    bottom: 2px;
-    border: 2px solid black;
-    box-sizing: border-box;
-    z-index: 3;
-}
-
-#header {
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    padding: 10px;
-    background-color: #0747a6;
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    border-bottom: 2px solid black;
-}
-
-#title {
-    flex-grow: 1;
-    text-align: center;
-}
-
-#titletext {
-    margin: 0;
-    color: #fff;
-}
-
-#test {
-    height: 60px;
-}
-
 h5 {
-    color: #fff;
-    margin: 2px;
-}
-
-p {
-    color: #ddd;
-    white-space: break-spaces;
-    padding: 10px;
     margin: 0;
+    font-size: 12px;
+    color: #fff;
 }
 
 .notifycontainer {
     display: flex;
-    align-items: center;
     justify-content: center;
-    padding: 8px;
+    align-items: center;
+    margin: 20px 0;
 }
 
 .switch {
-    display: inline-block;
-    height: 34px;
     position: relative;
+    display: inline-block;
     width: 60px;
-    margin: 0 auto;
+    height: 34px;
 }
 
-.switch input {
-    display:none;
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
 .checkswitch {
-    background-color: #ccc;
-    bottom: 0;
-    cursor: pointer;
-    left: 0;
     position: absolute;
-    right: 0;
+    cursor: pointer;
     top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
     transition: .4s;
+    border-radius: 34px;
 }
 
 .checkswitch:before {
-    background-color: #fff;
-    bottom: 4px;
+    position: absolute;
     content: "";
     height: 26px;
-    left: 4px;
-    position: absolute;
-    transition: .4s;
     width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
 }
 
 input:checked + .checkswitch {
-    background-color: #4CAF50;
+    background-color: #2a73e5; /* Jira primary blue */
 }
 
 input:checked + .checkswitch:before {
     transform: translateX(26px);
 }
 
-.checkswitch.round {
-    border-radius: 34px;
-}
-
-.checkswitch.round:before {
-    border-radius: 50%;
-}
-
 .slider {
-    width: 80%;
-    margin: 10px;
-    position: relative;
+    position: relative; /* Ensure the slider container is positioned relative */
+    margin: 20px 0;
+    width: 100%;
 }
 
-label {
-    color: white;
+input[type="range"] {
+    width: 100%;
 }
 
 .tooltip {
     position: absolute;
-    bottom: calc(40% + 10px);
+    bottom: calc(70% + 0px); /* Position the tooltip just above the slider */
     left: 50%;
-    transform: translateX(-75%);
+    transform: translateX(-50%);
     padding: 5px;
-    background-color: #777777;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #777;
     color: #fff;
     border-radius: 5px;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
-    width: 30px; /* Adjust the width as desired */
-    text-align: center; /* Center the text within the tooltip */
+    text-align: center;
     white-space: nowrap;
 }
 
@@ -172,18 +137,11 @@ label {
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: #777777;
-    z-index: 1;
+    border-top-color: #777;
 }
 
 .tooltip::after {
     content: "";
     position: absolute;
     top: calc(100% - 6px);
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: #777777;
-    z-index: 2;
-    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
 }

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Extension Options</title>
+  <style>
+    /* Basic styles */
+    body {
+      font-family: sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    #control {
+      background-color: #f6f6f6;
+      padding: 20px;
+    }
+
+    /* Header styles */
+    header {
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 15px;
+    }
+
+    #title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #titletext {
+      color: #005ea0; /* Jira blue */
+    }
+
+    /* Content styles */
+    #options-content {
+      padding: 20px;
+    }
+
+    .option-section {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 15px;
+    }
+
+    h5 {
+      margin: 0 0 5px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    /* Switch styles */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .switch input { 
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .checkswitch {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .5s ease-in-out;
+      transition: .5s ease-in-out;
+      border-radius: 34px; /* To make the switch background rounded */
+    }
+
+    .checkswitch::before {
+      content: "";
+      position: absolute;
+      height: 26px; /* Adjusted height */
+      width: 26px;  /* Adjusted width */
+      left: 4px;
+      top: 4px;
+      background-color: white;
+      border-radius: 50%; /* Make the thumb a circle */
+      -webkit-transition: .5s ease-in-out;
+      transition: .5s ease-in-out;
+    }
+
+    .switch input:checked + .checkswitch {
+      background-color: #2a73e5; /* Jira primary blue */
+    }
+
+    .switch input:checked + .checkswitch::before {
+      left: calc(100% - 30px); /* Adjusted position to ensure the circle fits well */
+    }
+
+    .checkswitch.round {
+      border-radius: 34px; /* Make the switch background rounded */
+    }
+
+    /* Text entry styles */
+    .text-entry-container {
+      margin-top: 20px;
+    }
+
+    .text-entry-container label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .text-entry-container input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      color: #888; /* Gray text color */
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .text-entry-container input[type="text"]:focus {
+      border-color: #2a73e5; /* Blue border on focus */
+      color: #333; /* Change text color to default on focus */
+      outline: none; /* Remove default outline */
+    }
+
+    /* Save button styles */
+    .button-container {
+      margin-top: 20px;
+    }
+
+    .save-button {
+      background-color: #2a73e5; /* Jira primary blue */
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .save-button:hover {
+      background-color: #1a5bb8; /* Darker blue on hover */
+    }
+
+  </style>
+</head>
+<body>
+  <div id="control">
+    <header id="header">
+      <h1 id="title"><span id="titletext">Your Extension Name</span> Options</h1>
+    </header>
+    <div id="options-content">
+      <section class="option-section">
+        <h5>Notifications</h5>
+        <div class="notifycontainer">
+          <p>Enable Notifications</p>
+          <label class="switch">
+            <input type="checkbox" id="enable-notifications">
+            <span class="checkswitch round"></span>
+          </label>
+        </div>
+      </section>
+      <section class="option-section text-entry-container">
+        <label for="notify-mode-query">Notify Mode Search Query</label>
+        <input type="text" id="notify-mode-query" placeholder="Enter search query for notify mode">
+      </section>
+      <div class="button-container">
+        <button class="save-button">Save</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

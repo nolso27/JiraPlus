@@ -3,7 +3,12 @@
 
     "name": "Jira+",
     "description": "Provides additional helpful functionality to Jira",
-    "version": "0.4",
+    "version": "0.6",
+    "icons": {"32": "icon32.png",
+      "48": "icon48.png",
+      "64": "icon64.png",
+      "128": "icon128.png",
+      "256": "icon256.png"},
     "permissions": [
       "storage",
       "offscreen"
