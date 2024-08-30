@@ -2,7 +2,7 @@ let workingWindowId;
 
 function notify() {
   chrome.windows.create({
-    url: 'https://jira.benco.com/issues/?jql=project = BEN AND status = Untriaged AND assignee in (EMPTY) ORDER BY created ASC',
+    url: 'https://jira.benco.com/issues/?jql=project = BEN AND status = Untriaged AND assignee in (currentUser()) ORDER BY created ASC',
     type: 'popup',
     state: 'maximized'
   }, (newWindow) => {
