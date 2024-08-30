@@ -78,9 +78,10 @@ if (document.getElementsByClassName('issuerow').length > 0) {
 }
 
 //    
-
+var timeoutId;
+var refreshInterval = 20000; 
 // Set the refresh interval outside the if condition
-setInterval(function () {
+setTimeout(function () {
   console.log('Refreshing page...');
   // Clear all intervals and timeouts
   clearTimeout(timeoutId);
@@ -95,23 +96,28 @@ console.log('Processing search results...');
 var trElements = document.querySelectorAll('.issuerow');
 console.log(trElements);
 trElements[0].click();
-
+var issueData = {}
+var issueActionLinks = document.querySelectorAll('.issue_actions a');
+issueActionLinks.forEach(element => {
+  console.log(element.href);
+});
 
 chrome.storage.local.get(["exclusion"], function (result) {
   if (result.exclusion) {
     console.log('Retrieved exclusion:', result.exclusion);
     exclusionAmount = result.exclusion;
-    if (liElements.length > exclusionAmount) {
-      console.log(`New ticket found (${liElements.length} > ${exclusionAmount})`);
+    if (trElements.length > exclusionAmount) {
+      console.log(`New ticket found (${trElements.length} > ${exclusionAmount})`);
 
       // Send a message to the background script
       chrome.runtime.sendMessage({ type: 'resultfound' });
+      
 
 
     } else {
       console.log('No new tickets found');
     }
-    resultHTML(exclusionAmount, liElements.length);
+    resultHTML(exclusionAmount, trElements.length);
   }
 });
 }
@@ -121,48 +127,54 @@ var bellGif = chrome.runtime.getURL('bell.gif');
 
 
 function searchHTML() {
-const listView = document.querySelector('a[data-layout-key="list-view"]');
-if (listView.querySelector('.aui-icon.aui-icon-small.aui-iconfont-success')) {
-  console.log('List view is active');
-} else {
-  console.log('List view is not active');
-  listView.click();
-}
-try {
-  document.getElementById("header").remove();
-} catch {
-  location.reload(true);
-}
-document.getElementsByClassName("issue-search-header")[0].remove();
-document.getElementById("navigator-sidebar").remove();
-try {
-  document.getElementsByClassName("navigator-sidebar collapsed")[0].remove();
-}
-catch (e) {
-  console.log("No sidebar to remove");
-}  
-
-
-  var results = document.querySelector("#issuetable"); // Check if there are search results
-  console.log('There are this many search results:', results);
-  if (results.length === 0) {
-      document.querySelector(".no-results.no-results-message").style.backgroundImage = `url(${bellSvg})`;
-      document.querySelector(".no-results.no-results-message h2").innerHTML = "You are in notify mode. You will hear a ding when we find a ticket. Closing this window will disable notify mode.";
-      document.querySelector(".no-results.no-results-message p").innerHTML = 'This widnow can be safely minimized.';
-      document.querySelector(".navigator-content.empty-results").style.display = "flex";
-      document.querySelector(".navigator-content.empty-results").style.alignItems = "center";
-      document.querySelector(".navigator-content.empty-results").style.justifyContent = "center";
-      document.querySelectorAll('[rel="shortcut icon"]')[0].href = chrome.runtime.getURL('icon.png')
-      document.documentElement.style.height = '100vh';
-      document.body.style.height = '100vh';
-      document.querySelector("#page").style.height = "100%";
-      document.querySelector("#content").style.height = "100%";
+  const listView = document.querySelector('a[data-layout-key="list-view"]');
+  if (listView.querySelector('.aui-icon.aui-icon-small.aui-iconfont-success')) {
+    console.log('List view is active');
   } else {
-      // document.getElementsByClassName("inline-issue-create-container")[0].remove();
-      // document.getElementsByClassName("pagination-view")[0].remove();
-      // document.getElementsByClassName("detail-panel")[0].remove();
+    console.log('List view is not active');
+    listView.click();
   }
-}
+  try {
+    document.getElementById("header").remove();
+  } catch {
+    location.reload(true);
+  }
+  document.getElementsByClassName("issue-search-header")[0].remove();
+  document.getElementById("navigator-sidebar").remove();
+  try {
+    document.getElementsByClassName("navigator-sidebar collapsed")[0].remove();
+  }
+  catch (e) {
+    console.log("No sidebar to remove");
+  }  
+
+  var timeToWait = 2000; 
+  // Set the refresh interval outside the if condition
+  setTimeout(function () {
+    console.log('Checking for new tickets...');
+    // Clear all intervals and timeouts
+    var results = document.querySelector("#issuetable"); // Check if there are search results
+    console.log('There are this many search results:', results);
+    if (results.length === 0) {
+        document.querySelector(".no-results.no-results-message").style.backgroundImage = `url(${bellSvg})`;
+        document.querySelector(".no-results.no-results-message h2").innerHTML = "You are in notify mode. You will hear a ding when we find a ticket. Closing this window will disable notify mode.";
+        document.querySelector(".no-results.no-results-message p").innerHTML = 'This widnow can be safely minimized.';
+        document.querySelector(".navigator-content.empty-results").style.display = "flex";
+        document.querySelector(".navigator-content.empty-results").style.alignItems = "center";
+        document.querySelector(".navigator-content.empty-results").style.justifyContent = "center";
+        document.querySelectorAll('[rel="shortcut icon"]')[0].href = chrome.runtime.getURL('icon.png')
+        document.documentElement.style.height = '100vh';
+        document.body.style.height = '100vh';
+        document.querySelector("#page").style.height = "100%";
+        document.querySelector("#content").style.height = "100%";
+    } else {
+      console.log('There are search results');
+        // document.getElementsByClassName("inline-issue-create-container")[0].remove();
+        // document.getElementsByClassName("pagination-view")[0].remove();
+        // document.getElementsByClassName("detail-panel")[0].remove();
+    }
+  }, timeToWait);
+} 
 
 function getSelectedLink() {
   disableNotify();
@@ -187,7 +199,7 @@ function disableNotify() {
 function resultHTML(exclusion, resultLength) {
   
   if (resultLength > exclusion) {
-      document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", `<div class="no-results no-results-message" style="position:relative;background-image: url(&quot;${bellGif}&quot;); margin-top: 10%;"><a class="ticketlink"style="position:absolute;width: 140px;height:160px;top: 0;left: 0; right: 0;margin-left: auto; margin-right: auto;"></a><h2>We found a ticket! Click <a class="ticketlink">here</a> or the bell above to continue to the selected ticket.</h2><p class="no-results-hint">NOTE: This will end notify mode.</p></div>`)
+      document.getElementById("issuetable").insertAdjacentHTML("afterend", `<div class="no-results no-results-message" style="position:relative;background-image: url(&quot;${bellGif}&quot;); margin-top: 10%;"><a class="ticketlink"style="position:absolute;width: 140px;height:160px;top: 0;left: 0; right: 0;margin-left: auto; margin-right: auto;"></a><h2>We found a ticket! Click <a class="ticketlink">here</a> or the bell above to continue to the selected ticket.</h2><p class="no-results-hint">NOTE: This will end notify mode.</p></div>`)
       document.getElementsByClassName("ticketlink")[0].onclick = getSelectedLink;
       document.getElementsByClassName("ticketlink")[1].onclick = getSelectedLink;
   } else {
