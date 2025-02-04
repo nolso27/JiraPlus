@@ -1,3 +1,4 @@
+
 if (document.readyState !== 'complete') {
   if (window.location.href.startsWith("https://jira.benco.com/") && window.location.href.includes("?jql=")) {
     window.addEventListener('load', jiraSearch);
@@ -29,10 +30,11 @@ chrome.storage.local.get(['extensionStates']).then((result) => {
       if (currentWindowId === storedWindowId) {
         try {
           searchHTML();
-          notifyMode();
+          notifyMode(0); // Argument is the number of times the function has been called
           console.log('Window ID matches working window!');
         } catch (e) {
           console.error("Could not finish updating page content: ", e);
+          location.reload();
         }
       } else {
         console.log('Window ID does not match working window. Notify mode will not be enabled.');
@@ -60,66 +62,77 @@ chrome.storage.local.get(['extensionStates'], function (result) {
 
 
 
-function notifyMode() {
-console.log('Entering notifyMode function');
-
-
-if (document.getElementsByClassName('issuerow').length > 0) {
-  console.log('There are search results loading');
-  if (document.getElementById('issuetable').getElementsByTagName('tr').length === 0) {
-    console.log(document.getElementsByClassName('issuetable'));
-    console.log('Issue list not yet populated');
-  } else {
-    console.log('Issue list already populated');
-    processSearchResults();
+function notifyMode(pass) {
+  if (pass > 5) {
+    location.reload(true);
   }
-} else {
-  console.log('No results container found');
-}
+  var timeToWait = 500; 
+  // Set the refresh interval outside the if condition
+  setTimeout(function () {
+    if (document.getElementsByClassName('search-results').length > 0) {
+      console.log('There are search results loading');
+      if (document.getElementsByClassName('issue-list')[0].getElementsByTagName('li').length === 0) {
+        console.log(document.getElementsByClassName('issue-list')[0]);
+        console.log('Issue list not yet populated');
+        pass = pass + 1;
+        notifyMode(pass);
+      } else {
+        console.log('Issue list already populated');
+        processSearchResults();
+      }
+    } else {
+      console.log('No results container found');
+    }
+  }, timeToWait);
+  console.log('Entering notifyMode function');
 
-//    
-var timeoutId;
-var refreshInterval = 20000; 
-// Set the refresh interval outside the if condition
-setTimeout(function () {
-  console.log('Refreshing page...');
-  // Clear all intervals and timeouts
-  clearTimeout(timeoutId);
-  location.reload(true);
-}, refreshInterval);
+  var refreshInterval = 20000; 
+  // Set the refresh interval outside the if condition
+  setTimeout(function () {
+    console.log('Refreshing page...');
+    // Clear all intervals and timeouts
+    location.reload(true);
+  }, refreshInterval);
 }
 
 function processSearchResults() {
 
-console.log('Processing search results...');
-// Process the search results here
-var trElements = document.querySelectorAll('.issuerow');
-console.log(trElements);
-trElements[0].click();
-var issueData = {}
-var issueActionLinks = document.querySelectorAll('.issue_actions a');
-issueActionLinks.forEach(element => {
-  console.log(element.href);
-});
+  console.log('Processing search results...');
+  // Process the search results here
+  var liElements = document.querySelectorAll('.issue-list li');
+  console.log(liElements);
+  liElements[0].click();
+  
 
-chrome.storage.local.get(["exclusion"], function (result) {
-  if (result.exclusion) {
-    console.log('Retrieved exclusion:', result.exclusion);
-    exclusionAmount = result.exclusion;
-    if (trElements.length > exclusionAmount) {
-      console.log(`New ticket found (${trElements.length} > ${exclusionAmount})`);
+  // Start checking for the loading element to disappear
+  console.log(loadingDetails());
 
-      // Send a message to the background script
-      chrome.runtime.sendMessage({ type: 'resultfound' });
-      
+  liElements.forEach((element) => {
+    element.onclick = function () {
+      console.log(loadingDetails());
+    };
+    var issueName = element.querySelector('.issue-link-summary').textContent;
+    console.log('Issue name:', issueName);
+  });
+
+  chrome.storage.local.get(["exclusion"], function (result) {
+    if (result.exclusion) {
+      console.log('Retrieved exclusion:', result.exclusion);
+      exclusionAmount = result.exclusion;
+      if (liElements.length > exclusionAmount) {
+        console.log(`New ticket found (${liElements.length} > ${exclusionAmount})`);
+
+        // Send a message to the background script
+        chrome.runtime.sendMessage({ type: 'resultfound' });
+        
 
 
-    } else {
-      console.log('No new tickets found');
+      } else {
+        console.log('No new tickets found');
+      }
+      resultHTML(exclusionAmount, liElements.length);
     }
-    resultHTML(exclusionAmount, trElements.length);
-  }
-});
+  });
 }
 
 var bellSvg = chrome.runtime.getURL('bell.svg');
@@ -128,11 +141,14 @@ var bellGif = chrome.runtime.getURL('bell.gif');
 
 function searchHTML() {
   const listView = document.querySelector('a[data-layout-key="list-view"]');
+  const splitView = document.querySelector('a[data-layout-key="split-view"]');
   if (listView.querySelector('.aui-icon.aui-icon-small.aui-iconfont-success')) {
     console.log('List view is active');
+    console.warn('List view is not currently supported. Switching to split view...');
+    splitView.click();
   } else {
-    console.log('List view is not active');
-    listView.click();
+    console.log('Split view is active');
+    // listView.click();
   }
   try {
     document.getElementById("header").remove();
@@ -148,27 +164,47 @@ function searchHTML() {
     console.log("No sidebar to remove");
   }  
 
-  var timeToWait = 2000; 
+  var timeToWait = 500; 
   // Set the refresh interval outside the if condition
   setTimeout(function () {
     console.log('Checking for new tickets...');
     // Clear all intervals and timeouts
-    var results = document.querySelector("#issuetable"); // Check if there are search results
+    var results = document.querySelector(".issue-list"); // Check if there are search results
     console.log('There are this many search results:', results);
     if (results.length === 0) {
-        document.querySelector(".no-results.no-results-message").style.backgroundImage = `url(${bellSvg})`;
-        document.querySelector(".no-results.no-results-message h2").innerHTML = "You are in notify mode. You will hear a ding when we find a ticket. Closing this window will disable notify mode.";
-        document.querySelector(".no-results.no-results-message p").innerHTML = 'This widnow can be safely minimized.';
-        document.querySelector(".navigator-content.empty-results").style.display = "flex";
-        document.querySelector(".navigator-content.empty-results").style.alignItems = "center";
-        document.querySelector(".navigator-content.empty-results").style.justifyContent = "center";
-        document.querySelectorAll('[rel="shortcut icon"]')[0].href = chrome.runtime.getURL('icon.png')
-        document.documentElement.style.height = '100vh';
-        document.body.style.height = '100vh';
-        document.querySelector("#page").style.height = "100%";
-        document.querySelector("#content").style.height = "100%";
+
+      // Format split view
+      document.querySelector(".no-results.no-results-message").style.backgroundImage = `url(${bellSvg})`;
+      document.querySelector(".no-results.no-results-message h2").innerHTML = "You are in notify mode. You will hear a ding when we find a ticket. Closing this window will disable notify mode.";
+      document.querySelector(".no-results.no-results-message p").innerHTML = 'This widnow can be safely minimized.';
+      document.querySelector(".navigator-content.empty-results").style.display = "flex";
+      document.querySelector(".navigator-content.empty-results").style.alignItems = "center";
+      document.querySelector(".navigator-content.empty-results").style.justifyContent = "center";
+      document.querySelectorAll('[rel="shortcut icon"]')[0].href = chrome.runtime.getURL('icon.png')
+      document.documentElement.style.height = '100vh';
+      document.body.style.height = '100vh';
+      document.querySelector("#page").style.height = "100%";
+      document.querySelector("#content").style.height = "100%"
+
+        // FOR LIST VIEW:
+        //
+        // document.querySelector(".no-results.no-results-message").style.backgroundImage = `url(${bellSvg})`;
+        // document.querySelector(".no-results.no-results-message h2").innerHTML = "You are in notify mode. You will hear a ding when we find a ticket. Closing this window will disable notify mode.";
+        // document.querySelector(".no-results.no-results-message p").innerHTML = 'This widnow can be safely minimized.';
+        // document.querySelector(".navigator-content.empty-results").style.display = "flex";
+        // document.querySelector(".navigator-content.empty-results").style.alignItems = "center";
+        // document.querySelector(".navigator-content.empty-results").style.justifyContent = "center";
+        // document.querySelectorAll('[rel="shortcut icon"]')[0].href = chrome.runtime.getURL('icon.png')
+        // document.documentElement.style.height = '100vh';
+        // document.body.style.height = '100vh';
+        // document.querySelector("#page").style.height = "100%";
+        // document.querySelector("#content").style.height = "100%";
     } else {
       console.log('There are search results');
+      document.getElementsByClassName("list-ordering")[0].remove();
+      document.getElementsByClassName("inline-issue-create-container")[0].remove();
+      document.getElementsByClassName("pagination-view")[0].remove();
+      document.getElementsByClassName("detail-panel")[0].style.display = 'none';
         // document.getElementsByClassName("inline-issue-create-container")[0].remove();
         // document.getElementsByClassName("pagination-view")[0].remove();
         // document.getElementsByClassName("detail-panel")[0].remove();
@@ -179,6 +215,7 @@ function searchHTML() {
 function getSelectedLink() {
   disableNotify();
   window.open(document.getElementsByClassName("focused")[0].getElementsByClassName('splitview-issue-link')[0].href, '_blank');
+  
 }
 
 function disableNotify() {
@@ -199,12 +236,71 @@ function disableNotify() {
 function resultHTML(exclusion, resultLength) {
   
   if (resultLength > exclusion) {
-      document.getElementById("issuetable").insertAdjacentHTML("afterend", `<div class="no-results no-results-message" style="position:relative;background-image: url(&quot;${bellGif}&quot;); margin-top: 10%;"><a class="ticketlink"style="position:absolute;width: 140px;height:160px;top: 0;left: 0; right: 0;margin-left: auto; margin-right: auto;"></a><h2>We found a ticket! Click <a class="ticketlink">here</a> or the bell above to continue to the selected ticket.</h2><p class="no-results-hint">NOTE: This will end notify mode.</p></div>`)
+    console.log('Ringing the bell');
+      document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", `<div class="no-results no-results-message" style="position:relative;background-image: url(&quot;${bellGif}&quot;); margin-top: 10%;"><a class="ticketlink"style="position:absolute;width: 140px;height:160px;top: 0;left: 0; right: 0;margin-left: auto; margin-right: auto;"></a><h2>We found a ticket! Click <a class="ticketlink">here</a> or the bell above to continue to the selected ticket.</h2><p class="no-results-hint">NOTE: This will end notify mode.</p></div>`);
       document.getElementsByClassName("ticketlink")[0].onclick = getSelectedLink;
       document.getElementsByClassName("ticketlink")[1].onclick = getSelectedLink;
   } else {
+    console.log('Not ringing the bell');
       document.getElementsByClassName("search-results")[0].insertAdjacentHTML("afterend", `<div class="no-results no-results-message" style="background-image: url(&quot;${bellSvg}&quot;); margin-top: 10%;"><h2>You are in notify mode. You will hear a ding when we find more tickets than your set amount.</h2><p class="no-results-hint">Amount of tickets are not equal or greater than set amount. Check extension window to adjust if necessary.</p></div>  `)
 
   }
 }
 
+
+function loadingDetails() {
+  const loadingElement = document.querySelector('.loading');
+  if (!loadingElement) {
+    // Loading element is gone, get the description-val element
+    var ticketDescription = document.querySelector('#description-val');
+    var ticketAccountNumber = document.querySelector('#customfield_12210-val');
+    var ticketAccountName = document.querySelector('#customfield_12616-val');
+    var ticketAccountPhoneNumber = document.querySelector('#customfield_12704-val');
+
+    // Check if any fields are null and set content to "Not found"
+    var descriptionText = ticketDescription ? ticketDescription.textContent.trim() : "Not found";
+    var accountNumberText = ticketAccountNumber ? ticketAccountNumber.textContent.trim() : "Not found";
+    var accountNameText = ticketAccountName ? ticketAccountName.textContent.trim() : "Not found";
+    var accountPhoneNumberText = ticketAccountPhoneNumber ? ticketAccountPhoneNumber.textContent.trim() : "Not found";
+
+    var focusedElement = document.querySelector('.issue-list li.focused');
+    if (focusedElement) {
+      var descriptionHTML = `<b>Description</b>: ${descriptionText}<br>
+                             <b>Account Number</b>: ${accountNumberText}<br>
+                             <b>Account Name</b>: ${accountNameText}<br>
+                             <b>Account Phone Number</b>: ${accountPhoneNumberText}`;
+
+      // Remove any existing dropdown
+      var existingDropdown = document.querySelector('.description-dropdown');
+      if (existingDropdown) {
+        existingDropdown.remove();
+      }
+
+      // Create a new dropdown div
+      var newDiv = document.createElement('div');
+      newDiv.classList.add('description-dropdown');
+      newDiv.innerHTML = descriptionHTML; 
+      newDiv.style.border = '1px solid #ccc';
+      newDiv.style.padding = '10px';
+      newDiv.style.marginTop = '10px';
+      newDiv.style.backgroundColor = '#f9f9f9';
+
+      // Append the new dropdown to the focused element
+      focusedElement.appendChild(newDiv);
+
+      // Add click event listener to hide the dropdown when another li is clicked
+      document.querySelectorAll('.issue-list li').forEach(li => {
+        li.addEventListener('click', function() {
+          if (li !== focusedElement) {
+            newDiv.remove();
+          }
+        });
+      });
+    } else {
+      console.log('Focused element not found');
+    }
+  } else {
+    // Loading element is still present, wait and check again
+    setTimeout(loadingDetails, 100); // Pass the function reference instead of calling it
+  }
+}
