@@ -1,17 +1,20 @@
-
-if (document.readyState !== 'complete') {
-  if (window.location.href.startsWith("https://jira.benco.com/") && window.location.href.includes("?jql=")) {
-    window.addEventListener('load', jiraSearch);
-  } else if (window.location.href.startsWith("https://jira.benco.com/browse/")) {
-    console.log("Content script injected into a Jira browse page");
-    chrome.storage.local.get(['extensionStates']).then((result) => {
-      console.log("Initial storage state in browse page:", result);
-    });
-    window.addEventListener('load', jiraBrowse);
+function main() {
+  if (document.readyState !== 'complete') {
+    if (window.location.href.startsWith("https://jira.benco.com/") && window.location.href.includes("?jql=")) {
+      window.addEventListener('load', jiraSearch);
+    } else if (window.location.href.startsWith("https://jira.benco.com/browse/")) {
+      console.log("Content script injected into a Jira browse page");
+      chrome.storage.local.get(['extensionStates']).then((result) => {
+        console.log("Initial storage state in browse page:", result);
+      });
+      window.addEventListener('load', jiraBrowse);
+    }
+  } else {
+    jiraSearch();
   }
-} else {
-  jiraSearch();
 }
+
+
 
 function jiraSearch() {
 console.log('Window loaded');
@@ -34,7 +37,6 @@ chrome.storage.local.get(['extensionStates']).then((result) => {
           console.log('Window ID matches working window!');
         } catch (e) {
           console.error("Could not finish updating page content: ", e);
-          location.reload();
         }
       } else {
         console.log('Window ID does not match working window. Notify mode will not be enabled.');
@@ -54,7 +56,7 @@ chrome.storage.local.get(['extensionStates'], function (result) {
   console.log('Initial state in jiraBrowse:', result);
   var acctNum = document.getElementById("customfield_12210-val").textContent.replace(/^\D+/g, '').trim();
   var div1 = document.querySelector('.module.toggle-wrap');
-  div1.insertAdjacentHTML('afterend', `<div class="module toggle-wrap"><div class="mod-header"><button class="aui-button toggle-title" aria-label="Jira+" aria-controls="Jira+-module" aria-expanded="true" resolved=""><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><g fill="none" fill-rule="evenodd"><path d="M3.29175 4.793c-.389.392-.389 1.027 0 1.419l2.939 2.965c.218.215.5.322.779.322s.556-.107.769-.322l2.93-2.955c.388-.392.388-1.027 0-1.419-.389-.392-1.018-.392-1.406 0l-2.298 2.317-2.307-2.327c-.194-.195-.449-.293-.703-.293-.255 0-.51.098-.703.293z" fill="#344563"></path></g></svg></button><h4 class="toggle-title" id="details-module-label">Jira+</h4><ul class="ops"></ul></div><div class= "mod-content"><div id="customfieldmodule"><div class="aui-tabs horizontal-tabs" id="customfield-tabs" role="application"><div class=" active-pane"> <ul class="property-list"> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Ticket History:</label> </strong> <div data-fieldtype="textfield" class="value"> <a id="ticket-history" href='https://jira.benco.com/issues/?jql=project = BEN AND "Account Number" ~ "${acctNum}" ORDER BY created DESC' target="_blank">Click Here</a> </div> </div> </li> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Placeholder</label> </strong> <div data-fieldtype="textfield" class="value"> placeholder </div> </div> </li> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Placeholder</label> </strong> <div data-fieldtype="textfield" class="value"> placeholder </div> </div> </li> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Place holder</label> </strong> <div data-fieldtype="textfield" class="value"> placeholder </div> </div> </li>   </ul> </div></div></div></div></div>`);  
+  div1.insertAdjacentHTML('afterend', `<div class="module toggle-wrap"><div class="mod-header"><button class="aui-button toggle-title" aria-label="Jira+" aria-controls="Jira+-module" aria-expanded="true" resolved=""><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><g fill="none" fill-rule="evenodd"><path d="M3.29175 4.793c-.389.392-.389 1.027 0 1.419l2.939 2.965c.218.215.5.322.779.322s.556-.107.769-.322l2.93-2.955c.388-.392.388-1.027 0-1.419-.389-.392-1.018-.392-1.406 0l-2.298 2.317-2.307-2.327c-.194-.195-.449-.293-.703-.293-.255 0-.51.098-.703.293z" fill="#344563"></path></g></svg></button><h4 class="toggle-title" id="details-module-label">Jira+</h4><ul class="ops"></ul></div><div class= "mod-content"><div id="customfieldmodule"><div class="aui-tabs horizontal-tabs" id="customfield-tabs" role="application"><div class=" active-pane"> <ul class="property-list"> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Ticket History:</label> </strong> <div data-fieldtype="textfield" class="value"> <a id="ticket-history" href='https://jira.benco.com/issues/?jql=project in (BSS, BEN, LO, MSS, TS, OVE) AND cf[12210] ~ "${acctNum}" ORDER BY created DESC' target="_blank">Click Here</a> </div> </div> </li> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Placeholder</label> </strong> <div data-fieldtype="textfield" class="value"> placeholder </div> </div> </li> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Placeholder</label> </strong> <div data-fieldtype="textfield" class="value"> placeholder </div> </div> </li> <li id="rowForcustomfield_12210" class="item"> <div class="wrap"> <strong title="Account Number" class="name"> <label for="customfield_12210">Place holder</label> </strong> <div data-fieldtype="textfield" class="value"> placeholder </div> </div> </li>   </ul> </div></div></div></div></div>`);  
 });
 }
 
@@ -140,15 +142,19 @@ var bellGif = chrome.runtime.getURL('bell.gif');
 
 
 function searchHTML() {
-  const listView = document.querySelector('a[data-layout-key="list-view"]');
-  const splitView = document.querySelector('a[data-layout-key="split-view"]');
-  if (listView.querySelector('.aui-icon.aui-icon-small.aui-iconfont-success')) {
+  var listView = document.querySelector('a[data-layout-key="list-view"]');
+  var splitView = document.querySelector('a[data-layout-key="split-view"]');
+  try {
+    if (listView.querySelector('.aui-icon.aui-icon-small.aui-iconfont-success')) {
     console.log('List view is active');
     console.warn('List view is not currently supported. Switching to split view...');
     splitView.click();
-  } else {
-    console.log('Split view is active');
-    // listView.click();
+    } else {
+      console.log('Split view is active');
+      // listView.click();
+    }
+  } catch {
+    console.warn('No view found');
   }
   try {
     document.getElementById("header").remove();
@@ -171,7 +177,7 @@ function searchHTML() {
     // Clear all intervals and timeouts
     var results = document.querySelector(".issue-list"); // Check if there are search results
     console.log('There are this many search results:', results);
-    if (results.length === 0) {
+    if (!results) {
 
       // Format split view
       document.querySelector(".no-results.no-results-message").style.backgroundImage = `url(${bellSvg})`;
@@ -304,3 +310,5 @@ function loadingDetails() {
     setTimeout(loadingDetails, 100); // Pass the function reference instead of calling it
   }
 }
+
+main();
